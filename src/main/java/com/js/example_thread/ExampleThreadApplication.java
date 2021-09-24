@@ -6,37 +6,38 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ExampleThreadApplication {
 
+	private String mMsg;
+
 	public static void main(String[] args) {
 		SpringApplication.run(ExampleThreadApplication.class, args);
 
-		MyThread myThread01 = new MyThread();
-		MyThread myThread02 = new MyThread();
-		MyThread myThread03 = new MyThread();
+		System.out.println("Test Start");
 
-		Runnable myRunnable01 = new MyRunnable();
-		Runnable myRunnable02 = new MyRunnable();
-		Runnable myRunnable03 = new MyRunnable();
+		ExampleThreadApplication exampleThreadApplication = new ExampleThreadApplication();
 
-		Thread thread01ForRunnable = new Thread(myRunnable01);
-		Thread thread02ForRunnable = new Thread(myRunnable02);
-		Thread thread03ForRunnable = new Thread(myRunnable03);
+		MyThread myThread01 = new MyThread(exampleThreadApplication);
+		MyThread myThread02 = new MyThread(exampleThreadApplication);
 
 		myThread01.setName("myThread01");
 		myThread02.setName("myThread02");
-		myThread03.setName("myThread03");
-
-		thread01ForRunnable.setName("myRunnable01");
-		thread02ForRunnable.setName("myRunnable02");
-		thread03ForRunnable.setName("myRunnable03");
-
 
 		myThread01.start();
-		thread01ForRunnable.start();
 		myThread02.start();
-		myThread03.start();
-		thread02ForRunnable.start();
-		thread03ForRunnable.start();
 
+		System.out.println("The end!!!");
+	}
+
+	public synchronized void callMe(String threadName) {
+		mMsg=threadName;
+		try {
+			Thread.sleep((long) (Math.random()*100));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		if(!mMsg.equals(threadName)) {
+			System.out.println(threadName + " | "+mMsg);
+		}
 	}
 
 }
