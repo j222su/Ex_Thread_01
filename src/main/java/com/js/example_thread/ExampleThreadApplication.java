@@ -3,10 +3,16 @@ package com.js.example_thread;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.HashMap;
+
 @SpringBootApplication
 public class ExampleThreadApplication {
 
-	private String mMsg;
+	private HashMap<String, String > mHashMap01 = new HashMap<>();
+	private HashMap<String, String > mHashMap02 = new HashMap<>();
+
+	private final Object object01 = new Object();
+	private final Object object02 = new Object();
 
 	public static void main(String[] args) {
 		SpringApplication.run(ExampleThreadApplication.class, args);
@@ -15,28 +21,44 @@ public class ExampleThreadApplication {
 
 		ExampleThreadApplication exampleThreadApplication = new ExampleThreadApplication();
 
-		MyThread myThread01 = new MyThread(exampleThreadApplication);
-		MyThread myThread02 = new MyThread(exampleThreadApplication);
+		new Thread(()-> {
+			for(int i = 0; i<5; i++) {
+				exampleThreadApplication.put1("A", "B");
+				exampleThreadApplication.get2("C");
+			}
+		}).start();
 
-		myThread01.setName("myThread01");
-		myThread02.setName("myThread02");
-
-		myThread01.start();
-		myThread02.start();
+		new Thread(()-> {
+			for(int i = 0; i<5; i++) {
+				exampleThreadApplication.put2("C", "D");
+				exampleThreadApplication.get1("A");
+			}
+		}).start();
 
 		System.out.println("The end!!!");
 	}
 
-	public synchronized void callMe(String threadName) {
-		mMsg=threadName;
-		try {
-			Thread.sleep((long) (Math.random()*100));
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+	public void put1(String key, String value) {
+		synchronized (object01) {
+			mHashMap01.put(key, value);
 		}
+	}
 
-		if(!mMsg.equals(threadName)) {
-			System.out.println(threadName + " | "+mMsg);
+	public String get1(String key) {
+		synchronized (object01) {
+			return mHashMap01.get(key);
+		}
+	}
+
+	public void put2(String key, String value) {
+		synchronized (object02) {
+			mHashMap02.put(key, value);
+		}
+	}
+
+	public String get2(String key) {
+		synchronized (object02) {
+			return mHashMap02.get(key);
 		}
 	}
 
