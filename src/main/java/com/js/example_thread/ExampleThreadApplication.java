@@ -31,7 +31,6 @@ public class ExampleThreadApplication {
 
 
 		myThread01.start();
-		thread01ForRunnable.start();
 		myThread02.start();
 		myThread03.start();
 		thread02ForRunnable.start();
